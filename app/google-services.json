@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "411136573503",
+    "firebase_url": "https://idogu-ad9ab.firebaseio.com",
+    "project_id": "idogu-ad9ab",
+    "storage_bucket": "idogu-ad9ab.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:411136573503:android:7ec656faf6fd5210",
+        "android_client_info": {
+          "package_name": "com.iseoulu.android.idogu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "411136573503-cofba56ue448biim5cucmm52rmsdaj41.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2WlMqXjg8KIZWHjRisx1eHvZzyqE6GjQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
