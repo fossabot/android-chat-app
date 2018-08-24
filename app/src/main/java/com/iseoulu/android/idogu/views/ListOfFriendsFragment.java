@@ -1,6 +1,7 @@
 package com.iseoulu.android.idogu.views;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -22,6 +23,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.iseoulu.android.idogu.R;
 import com.iseoulu.android.idogu.adapters.ListOfFriendAdapter;
+import com.iseoulu.android.idogu.customviews.RecyclerViewItemClickListener;
 import com.iseoulu.android.idogu.models.User;
 
 import java.util.Iterator;
@@ -57,7 +59,7 @@ public class ListOfFriendsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View listOfFriendView = inflater.inflate(R.layout.fragment_list_of_friends,container, false);
+        final View listOfFriendView = inflater.inflate(R.layout.fragment_list_of_friends,container, false);
         ButterKnife.bind(this, listOfFriendView);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
@@ -76,17 +78,47 @@ public class ListOfFriendsFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         // 3. 아이템별로 (친구) 클릭이벤트를 주어서 선택한 친구와 대화를 할 수 있도록 함
+        mRecyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(getContext(), new RecyclerViewItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                final User friend = mListOfFriendAdapter.getItem(position); // 정보소실방지 final
 
+                if (mListOfFriendAdapter.getSelectionMode() == ListOfFriendAdapter.UNSELECTION_MODE) {
+                    Snackbar.make(view, friend.getName() + "님과 대화를 하시겠습니까?", Snackbar.LENGTH_LONG).setAction("예", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent chatIntent = new Intent(getActivity(), ChatActivity.class);
+                            chatIntent.putExtra("uid", friend.getUid());
+                            startActivity(chatIntent);
+                        }
+                    }).show();
+                } else {
+                    friend.setSelection(friend.isSelection() ? false : true);
+                    int selectedUsersCount = mListOfFriendAdapter.getSelectionUsersCount();
 
-
+                    Snackbar.make(view, selectedUsersCount + "명과 대화를 하시겠습니까?", Snackbar.LENGTH_LONG).setAction("예", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent chatIntent = new Intent(getActivity(), ChatActivity.class);
+                            chatIntent.putExtra("uids", mListOfFriendAdapter.getSelectedUids());
+                            startActivity(chatIntent);
+                        }
+                    }).show();
+                }
+            }
+        }));
 
         return listOfFriendView;
     }
 
-
-
     public void toggleSearchBar(){
         mSearchArea.setVisibility(mSearchArea.getVisibility() == View.VISIBLE ? View.GONE:View.VISIBLE);
+    }
+
+    public void toggleSelectionMode(){
+        mListOfFriendAdapter
+                .setSelectionMode(mListOfFriendAdapter.getSelectionMode() == mListOfFriendAdapter.SELECTION_MODE ? mListOfFriendAdapter.UNSELECTION_MODE :
+                mListOfFriendAdapter.SELECTION_MODE);
     }
 
     @OnClick(R.id.findBtn)

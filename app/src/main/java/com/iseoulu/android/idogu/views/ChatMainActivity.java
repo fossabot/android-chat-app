@@ -35,7 +35,7 @@ public class ChatMainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chatting_main);
+        setContentView(R.layout.activity_chat_main);
         ButterKnife.bind(this); // 버터 나이프 사용
 
         mTabLayout.setupWithViewPager(mViewPager);
@@ -47,8 +47,14 @@ public class ChatMainActivity extends AppCompatActivity {
                 Fragment currentFragment = mPagerAdapter.getItem(mViewPager.getCurrentItem());
                 if(currentFragment instanceof ListOfFriendsFragment){
                     ((ListOfFriendsFragment) currentFragment).toggleSearchBar();
-                }
+                }else {
+                    // 친구 탭으로 이동
+                    mViewPager.setCurrentItem(2, true); // 2번이 friend fragment, 부드럽게 가라고 true
+                    // 체크박스가 보일 수 있도록 처리
+                    ListOfFriendsFragment listOfFriendsFragment = (ListOfFriendsFragment) mPagerAdapter.getItem(1);
+                    listOfFriendsFragment.toggleSelectionMode();
 
+                }
             }
         });
     }

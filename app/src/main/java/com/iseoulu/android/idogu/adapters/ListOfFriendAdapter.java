@@ -5,6 +5,7 @@ import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -22,6 +23,8 @@ public class ListOfFriendAdapter extends RecyclerView.Adapter<ListOfFriendAdapte
     public static final int UNSELECTION_MODE = 1;
     public static final int SELECTION_MODE = 2;
 
+    private int selectionMode = UNSELECTION_MODE;
+
     private ArrayList<User> listOfFriend;
 
     public ListOfFriendAdapter(){
@@ -32,6 +35,39 @@ public class ListOfFriendAdapter extends RecyclerView.Adapter<ListOfFriendAdapte
         listOfFriend.add(friend);
         notifyDataSetChanged();
     }
+
+    public void setSelectionMode(int selectionMode){
+        this.selectionMode = selectionMode;
+        notifyDataSetChanged(); // UI가 변동
+    }
+
+    public int getSelectionMode(){
+        return this.selectionMode;
+    }
+
+    public int getSelectionUsersCount(){
+        int selectedCount = 0;
+
+        for(User user:listOfFriend){
+            if(user.isSelection()){
+                selectedCount++;
+            }
+        }
+        return selectedCount;
+    }
+
+    public String [] getSelectedUids(){
+       String [] selecedUids = new String[getSelectionUsersCount()];
+        int i=0;
+
+        for(User user:listOfFriend){
+            if(user.isSelection()){
+                selecedUids[i++]=user.getUid();
+            }
+        }
+        return selecedUids;
+    }
+
 
     public User getItem(int position){
         return this.listOfFriend.get(position);
@@ -52,6 +88,12 @@ public class ListOfFriendAdapter extends RecyclerView.Adapter<ListOfFriendAdapte
         holder.mEmailView.setText(friend.getEmail());
         holder.mNameView.setText(friend.getName());
 
+        if(getSelectionMode() == UNSELECTION_MODE){
+            holder.friendSelectedView.setVisibility(View.GONE);
+        }else{
+            holder.friendSelectedView.setVisibility(View.VISIBLE);
+        }
+
         if(friend.getProfileUrl() != null) {
             Glide.with(holder.itemView)
                     .load(friend.getProfileUrl())
@@ -66,6 +108,9 @@ public class ListOfFriendAdapter extends RecyclerView.Adapter<ListOfFriendAdapte
     }
 
     public static class FriendHolder extends RecyclerView.ViewHolder{
+
+        @BindView(R.id.checkbox)
+        CheckBox friendSelectedView;
 
         @BindView(R.id.thumb)
         RoundedImageView mProfileView;
