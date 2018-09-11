@@ -120,7 +120,7 @@ public class ChatActivity extends AppCompatActivity {
             // 읽음 처리
             // chat_messages > {chat_id} > {message_id} > readUserList
             // 내가 존재 하는지를 확인
-            // 존재한다면
+            // 존재한다면 아무 처리 하지 않고
             // 존재 하지 않는다면
             // chat_messages > {chat_id} > {message_id} >  unreadCount -= 1
             // readUserList에 내 uid 추가
@@ -128,8 +128,9 @@ public class ChatActivity extends AppCompatActivity {
             if ( readUserUIDList != null ) {
                 if ( !readUserUIDList.contains(mFirebaseUser.getUid())) {
                     // chat_messages > {chat_id} > {message_id} >  unreadCount -= 1
+                    // 나의 uid가 있는지 확인 -> 존재하지 않는다면
 
-                    // messageRef.setValue();
+                    // messageRef.setValue(); 이렇게 했엇는데, 동기가 맞지를 않는다. 서로 같은 정보를 업데이트해야해서 Transaction 사용
                     dataSnapshot.getRef().runTransaction(new Transaction.Handler() {
                         @Override
                         public Transaction.Result doTransaction(MutableData mutableData) {
@@ -152,12 +153,12 @@ public class ChatActivity extends AppCompatActivity {
                                 mutableTextMessage.setUnreadCount(mutableUnreadCount);
                                 mutableData.setValue(mutableTextMessage);
                             }
-                            return Transaction.success(mutableData);
+                            return Transaction.success(mutableData); // 취소 버튼을 눌렀을때는 abort로 작업에 대한 무효화 작업
                         }
 
                         @Override
                         public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-                            initTotalunreadCount();
+                            initTotalunreadCount(); // 방에 대한 unreadCount도 0으로 만듬
                         }
                     });
                 }
@@ -359,6 +360,7 @@ public class ChatActivity extends AppCompatActivity {
                                     dataSnapshot.getRef().child("chats").child(mChatId).setValue(chat);
                                     if ( !isSentMessage ) {
                                         sendMessage();
+                                        addMessageListener(); // 방을 생성하고 바로 메세지가 보여지기 위해서
                                         isSentMessage = true;
                                     }
 
