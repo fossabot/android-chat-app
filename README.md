@@ -1,3 +1,1 @@
 # android-chat-app
-
-- idogu
